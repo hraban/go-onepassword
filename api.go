@@ -21,6 +21,11 @@ import (
 	"os/exec"
 )
 
+var (
+	ErrItemNotFound  = fmt.Errorf("1password item not found")
+	ErrVaultNotFound = fmt.Errorf("1password vault not found")
+)
+
 // SectionField is a field in the free-form Section chapter of an item
 type SectionField struct {
 	Label string `json:"t"`
@@ -69,18 +74,6 @@ func (a *Api) SetDebugf(f Printer) {
 	a.debugf = f
 }
 
-func (a *Api) call(args ...string) ([]byte, error) {
-	cmd := a.execCmd("op", args...)
-	out, err := cmd.Output()
-	if err != nil {
-		if ee, ok := err.(*exec.ExitError); ok {
-			a.debugf("op stderr: %s", ee.Stderr)
-		}
-		return nil, fmt.Errorf("op command: %v", err)
-	}
-	return out, nil
-}
-
 func (a *Api) SetVault(uuid string) {
 	a.VaultUUID = uuid
 }
@@ -114,7 +107,7 @@ func (sec *Section) Field(label string) *SectionField {
 	return nil
 }
 
-func (a *Api) GetItem(name string) (*PasswordItem, error) {
+func (a *Api) Item(name string) (*PasswordItem, error) {
 	args := []string{"get", "item"}
 	if a.VaultUUID != "" {
 		args = append(args, "--vault="+a.VaultUUID)

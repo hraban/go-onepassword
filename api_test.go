@@ -44,9 +44,9 @@ func TestGet(t *testing.T) {
 	a.SetVault("vkltlvui3cc8fifyz2s346qafq")
 	a.debugf = t.Logf
 	a.execCmd = buildMock("test-get")
-	item, err := a.GetItem("test")
+	item, err := a.Item("test")
 	if err != nil {
-		t.Fatalf("GetItem: %v", err)
+		t.Fatalf("Item: %v", err)
 	}
 	sec := item.Section("my title")
 	if sec == nil {
